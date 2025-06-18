@@ -9,6 +9,8 @@ import cv2
 import numpy as np
 from pyzbar.pyzbar import decode
 
+__version__ = "1.0.0"
+
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///certificates.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False

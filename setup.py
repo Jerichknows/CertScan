@@ -1,0 +1,30 @@
+from setuptools import setup, find_packages
+
+setup(
+    name="certverify",
+    version="1.0.0",
+    packages=find_packages(),
+    install_requires=[
+        alembic==1.13.1
+        blinker==1.7.0
+        click==8.1.7
+        Flask==2.3.2
+        Flask-Login==0.6.2
+        Flask-Migrate==4.0.5
+        Flask-SQLAlchemy==3.0.5
+        greenlet==2.0.2
+        itsdangerous==2.1.2
+        Jinja2==3.1.2
+        Mako==1.2.4
+        MarkupSafe==2.1.3
+        python-dotenv==1.0.0
+        SQLAlchemy==2.0.21
+        Werkzeug==2.3.7
+        qrcode==7.4.2
+        Pillow==9.5.0
+        qreader==3.10
+        numpy==1.24.3
+        opencv-python-headless==4.7.0.72
+        pyzbar==0.1.9
+    ],
+)
