@@ -24,7 +24,7 @@ config==0.5.1
 
 # QR Code Generation
 qrcode==7.4.2
-pillow==10.2.0
+pillow==10.1.0  # Downgraded for Python 3.13 compatibility
 
 # Image Processing and QR Decoding
 opencv-python-headless==4.9.0.80
