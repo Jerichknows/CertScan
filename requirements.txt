@@ -9,8 +9,8 @@ python-dotenv==1.0.0
 SQLAlchemy==2.0.21
 Werkzeug==2.3.7
 qrcode==7.4.2
-Pillow==10.3.0 --only-binary=:all:
+Pillow==11.0.0  # Updated version for Python 3.13
 qreader==3.10
-numpy==1.24.3
-opencv-python-headless==4.7.0.72 --only-binary=:all:
+numpy==1.26.4
+opencv-python-headless==4.9.0.80
 pyzbar==0.1.9
