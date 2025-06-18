@@ -16,12 +16,13 @@ setup(
         SQLAlchemy==1.4.48  # Downgraded to stable version
         Werkzeug==2.3.7
         qrcode==7.4.2
-        Pillow==10.3.0  # Downgraded for compatibility
+        Pillow==11.0.0 --only-binary=:all:
         qreader==3.16
-        numpy==1.26.4  # Downgraded for stability
+        numpy==2.1.3  # Updated version for Python 3.13
         opencv-python-headless==4.9.0.80
         pyzbar==0.1.9
         gunicorn==21.2.0
+
 
     ],
 )
