@@ -18,3 +18,12 @@ pytz==2025.2
 SQLAlchemy==2.0.41
 typing_extensions==4.13.2
 Werkzeug==3.1.3
+flask==3.0.2
+flask-sqlalchemy==3.1.1
+qrcode==7.4.2
+pillow==10.2.0
+opencv-python-headless==4.9.0.80
+numpy==1.26.4
+# Use pyzbar if system dependencies are available, otherwise use qreader
+pyzbar==0.1.9
+qreader==3.10
