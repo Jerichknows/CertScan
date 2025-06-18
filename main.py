@@ -220,6 +220,6 @@ def unverified_certificates():
     return render_template('certificates_list.html',
                          certificates=certificates,
                          title="Unverified Certificates")
-                         
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
