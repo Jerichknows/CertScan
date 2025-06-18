@@ -19,7 +19,6 @@ blinker==1.9.0
 
 # Configuration
 python-dotenv==1.1.0
-dotenv==0.9.9
 config==0.5.1
 
 # QR Code Generation
