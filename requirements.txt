@@ -1,14 +1,9 @@
-# Core
 Flask==2.2.5
-Werkzeug==2.2.3
-Jinja2==3.1.2
 gunicorn==21.2.0
-
-# Database
+qrcode==7.4.2
+Pillow==9.5.0
 Flask-SQLAlchemy==3.0.2
-SQLAlchemy==2.0.10
-
-# QR Code
+numpy==1.24.3
 qrcode==7.4.2
 Pillow==9.5.0
 qreader==3.10

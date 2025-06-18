@@ -2,13 +2,7 @@ services:
   - type: web
     name: certificate-verifier
     env: python
-    buildCommand: |
-      python -m venv venv
-      . venv/bin/activate
-      pip install --upgrade pip setuptools
-      pip install -r requirements.txt
-    startCommand: |
-      . venv/bin/activate
-      gunicorn --bind 0.0.0.0:$PORT --workers 4 main:app
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 4 main:app
     python:
       version: "3.9.16"
