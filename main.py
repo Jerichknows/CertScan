@@ -12,9 +12,8 @@ from pyzbar.pyzbar import decode
 __version__ = "1.0.0"
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///certificates.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///certificates.db').replace("postgres://", "postgresql://")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = 'static/qrcodes'
 db = SQLAlchemy(app)
 
 # Create upload folder if it doesn't exist
