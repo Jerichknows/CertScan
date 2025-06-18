@@ -11,20 +11,17 @@ setup(
         Flask==2.3.2
         Flask-Login==0.6.2
         Flask-Migrate==4.0.5
-        Flask-SQLAlchemy==3.0.5
-        greenlet==2.0.2
-        itsdangerous==2.1.2
-        Jinja2==3.1.2
-        Mako==1.2.4
-        MarkupSafe==2.1.3
+        Flask-SQLAlchemy==3.0.5  # Downgraded to match SQLAlchemy 1.4
         python-dotenv==1.0.0
-        SQLAlchemy==2.0.21
+        SQLAlchemy==1.4.48  # Downgraded to stable version
         Werkzeug==2.3.7
         qrcode==7.4.2
-        Pillow==9.5.0
-        qreader==3.10
-        numpy==1.24.3
-        opencv-python-headless==4.7.0.72
+        Pillow==10.3.0  # Downgraded for compatibility
+        qreader==3.16
+        numpy==1.26.4  # Downgraded for stability
+        opencv-python-headless==4.9.0.80
         pyzbar==0.1.9
+        gunicorn==21.2.0
+
     ],
 )
