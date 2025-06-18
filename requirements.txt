@@ -6,10 +6,10 @@ Flask-Login==0.6.2
 Flask-Migrate==4.0.5
 Flask-SQLAlchemy==3.0.5
 python-dotenv==1.0.0
-SQLAlchemy==2.0.23  # Working version with Python 3.11
+SQLAlchemy==2.0.23
 Werkzeug==2.3.7
 qrcode==7.4.2
-Pillow==10.0.1 --only-binary=:all:
+Pillow==10.2.0 --only-binary=:all:  # Available version with binary wheels
 qreader==3.16
 numpy==1.26.4
 opencv-python-headless==4.8.1.78
