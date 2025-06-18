@@ -4,9 +4,9 @@ click==8.1.7
 Flask==2.3.2
 Flask-Login==0.6.2
 Flask-Migrate==4.0.5
-Flask-SQLAlchemy==3.0.5
+Flask-SQLAlchemy==3.1.1  # Updated version
 python-dotenv==1.0.0
-SQLAlchemy==2.0.21
+SQLAlchemy==2.0.25  # Updated version
 Werkzeug==2.3.7
 qrcode==7.4.2
 Pillow==11.0.0 --only-binary=:all:
