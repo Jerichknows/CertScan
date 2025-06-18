@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Certificate Verification</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        h1 { color: {% if valid %}#4CAF50{% else %}#f44336{% endif %}; }
+        .cert-info { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    {% if valid %}
+        <h1>Certificate Verified Successfully!</h1>
+        <div class="cert-info">
+            <p><strong>Student Name:</strong> {{ student_name }}</p>
+            <p><strong>Course Name:</strong> {{ course_name }}</p>
+            <p><strong>Issue Date:</strong> {{ issue_date }}</p>
+            <p><strong>Certificate ID:</strong> {{ certificate_id }}</p>
+        </div>
+    {% else %}
+        <h1>Invalid Certificate</h1>
+        <p>The certificate you are trying to verify does not exist in our system.</p>
+    {% endif %}
+
+    <p><a href="{{ url_for('home') }}">Back to Home</a></p>
+</body>
+</html>

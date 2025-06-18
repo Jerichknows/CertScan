@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>All Certificates</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; }
+        h1 { color: #333; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #4CAF50; color: white; font-weight: bold; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        tr:hover { background-color: #f1f1f1; }
+        .verified { color: #4CAF50; font-weight: bold; }
+        .not-verified { color: #f44336; font-weight: bold; }
+        .action-links a {
+            display: inline-block;
+            padding: 6px 12px;
+            margin-right: 5px;
+            border-radius: 4px;
+            text-decoration: none;
+            color: white;
+            font-size: 14px;
+        }
+        .verify-btn { background-color: #4CAF50; }
+        .download-btn { background-color: #9C27B0; }
+    </style>
+</head>
+<body>
+    <h1>All Issued Certificates</h1>
+    <p><a href="{{ url_for('home') }}" style="text-decoration: none; color: #2196F3;">← Back to Home</a></p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Certificate ID</th>
+                <th>Student Name</th>
+                <th>Course Name</th>
+                <th>Issue Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cert in certificates %}
+            <tr>
+                <td>{{ cert.certificate_id }}</td>
+                <td>{{ cert.student_name }}</td>
+                <td>{{ cert.course_name }}</td>
+                <td>{{ cert.issue_date }}</td>
+                <td class="{% if cert.is_verified %}verified{% else %}not-verified{% endif %}">
+                    {% if cert.is_verified %}Verified{% else %}Not Verified{% endif %}
+                </td>
+                <td class="action-links">
+                    {% if not cert.is_verified %}
+                    <a href="{{ url_for('verify_certificate', cert_id=cert.certificate_id) }}" class="verify-btn">Verify</a>
+                    {% endif %}
+                    {% if cert.qr_filename %}
+                    <a href="{{ url_for('static', filename='qrcodes/' + cert.qr_filename) }}" class="download-btn" download>Download QR</a>
+                    {% else %}
+                    <span class="download-btn" style="background-color: #cccccc; cursor: not-allowed;">Download N/A</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

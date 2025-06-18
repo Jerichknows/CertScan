@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Certificate Verifier</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        h1 { color: #333; }
+        .menu { margin-top: 30px; }
+        .menu a { display: inline-block; margin: 10px; padding: 10px 20px;
+                 background-color: #4CAF50; color: white; text-decoration: none;
+                 border-radius: 5px; }
+        .menu a:hover { background-color: #45a049; }
+    </style>
+</head>
+<body>
+    <h1>Certificate Verification System</h1>
+    <p>This system allows you to issue and verify certificates using QR codes.</p>
+
+    <div class="menu">
+        <a href="{{ url_for('list_certificates') }}">View All Certificates</a>
+        <a href="{{ url_for('issue_certificate') }}">Issue New Certificate</a>
+        <a href="{{ url_for('check_certificate') }}">Check Certificate</a>
+    </div>
+</body>
+</html>

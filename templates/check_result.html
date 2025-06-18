@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Certificate Check Result</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        h1 { color: {% if found %}#4CAF50{% else %}#f44336{% endif %}; }
+        .cert-info { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .valid { color: #4CAF50; font-weight: bold; }
+        .invalid { color: #f44336; font-weight: bold; }
+    </style>
+</head>
+<body>
+    {% if found %}
+        <h1>Certificate Found</h1>
+        <div class="cert-info">
+            <p><strong>Student Name:</strong> {{ certificate.student_name }}</p>
+            <p><strong>Course Name:</strong> {{ certificate.course_name }}</p>
+            <p><strong>Issue Date:</strong> {{ certificate.issue_date }}</p>
+            <p><strong>Certificate ID:</strong> {{ certificate.certificate_id }}</p>
+            <p><strong>Status:</strong>
+                <span class="{% if certificate.is_verified %}valid{% else %}invalid{% endif %}">
+                    {% if certificate.is_verified %}Verified{% else %}Not Verified{% endif %}
+                </span>
+            </p>
+        </div>
+    {% else %}
+        <h1>Certificate Not Found</h1>
+        <p>The certificate with the provided ID does not exist in our system.</p>
+    {% endif %}
+
+    <p><a href="{{ url_for('check_certificate') }}">Check Another Certificate</a></p>
+    <p><a href="{{ url_for('home') }}">Back to Home</a></p>
+</body>
+</html>

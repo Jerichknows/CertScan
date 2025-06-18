@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Check Certificate</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
+        h1 { color: #333; }
+        .tab-container { display: flex; margin-bottom: 20px; }
+        .tab {
+            padding: 10px 20px;
+            background: #ddd;
+            cursor: pointer;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+        }
+        .tab.active { background: #2196F3; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        form { margin-top: 20px; }
+        label { display: block; margin-top: 10px; }
+        input { width: 100%; padding: 8px; margin-top: 5px; }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover { background-color: #0b7dda; }
+        #qrPreview {
+            max-width: 200px;
+            margin-top: 15px;
+            display: none;
+        }
+        .verify-btn { background-color: #4CAF50; }
+        .verify-btn:hover { background-color: #45a049; }
+        #resultContainer {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        .valid { background-color: #dff0d8; color: #3c763d; }
+        .invalid { background-color: #f2dede; color: #a94442; }
+    </style>
+</head>
+<body>
+    <h1>Check Certificate Validity</h1>
+
+    <div class="tab-container">
+        <div class="tab active" onclick="switchTab('idTab')">By Certificate ID</div>
+        <div class="tab" onclick="switchTab('qrTab')">By QR Code</div>
+    </div>
+
+    <div id="idTab" class="tab-content active">
+        <form method="POST" action="{{ url_for('check_certificate') }}">
+            <label for="certificate_id">Certificate ID:</label>
+            <input type="text" id="certificate_id" name="certificate_id" placeholder="Enter certificate ID">
+            <button type="submit">Check Certificate</button>
+        </form>
+    </div>
+
+    <div id="qrTab" class="tab-content">
+        <form id="qrForm" enctype="multipart/form-data">
+            <label for="qr_file">Upload QR Code Image:</label>
+            <input type="file" id="qr_file" name="qr_file" accept="image/*" required>
+            <img id="qrPreview" src="#" alt="QR Code Preview">
+            <button type="button" class="verify-btn" onclick="verifyQRCode()">Verify QR Code</button>
+        </form>
+        <div id="resultContainer">
+            <h3 id="resultTitle"></h3>
+            <div id="resultDetails"></div>
+        </div>
+    </div>
+
+    <p><a href="{{ url_for('home') }}">Back to Home</a></p>
+
+    <script>
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // Preview QR code before upload
+        document.getElementById('qr_file').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    document.getElementById('qrPreview').src = event.target.result;
+                    document.getElementById('qrPreview').style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function verifyQRCode() {
+            const fileInput = document.getElementById('qr_file');
+            if (!fileInput.files.length) {
+                alert('Please select a QR code image');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('qr_file', fileInput.files[0]);
+
+            fetch('/verify-qr', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultContainer = document.getElementById('resultContainer');
+                const resultTitle = document.getElementById('resultTitle');
+                const resultDetails = document.getElementById('resultDetails');
+
+                resultContainer.style.display = 'block';
+
+                if (data.error) {
+                    resultContainer.className = 'invalid';
+                    resultTitle.textContent = 'Verification Failed';
+                    resultDetails.innerHTML = `<p>${data.error}</p>`;
+                } else {
+                    resultContainer.className = 'valid';
+                    resultTitle.textContent = 'Certificate Verified';
+                    resultDetails.innerHTML = `
+                        <p><strong>Student:</strong> ${data.student_name}</p>
+                        <p><strong>Course:</strong> ${data.course_name}</p>
+                        <p><strong>Issue Date:</strong> ${data.issue_date}</p>
+                        <p><strong>Certificate ID:</strong> ${data.certificate_id}</p>
+                        <p><strong>Status:</strong> ${data.is_verified ? 'Verified' : 'Not Verified'}</p>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                const resultContainer = document.getElementById('resultContainer');
+                resultContainer.style.display = 'block';
+                resultContainer.className = 'invalid';
+                document.getElementById('resultTitle').textContent = 'Error';
+                document.getElementById('resultDetails').innerHTML = '<p>An error occurred during verification</p>';
+            });
+        }
+    </script>
+</body>
+</html>
