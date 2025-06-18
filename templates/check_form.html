@@ -1,92 +1,175 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Check Certificate</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
-        h1 { color: #333; }
-        .tab-container { display: flex; margin-bottom: 20px; }
-        .tab {
-            padding: 10px 20px;
-            background: #ddd;
-            cursor: pointer;
-            margin-right: 5px;
-            border-radius: 5px 5px 0 0;
-        }
-        .tab.active { background: #2196F3; color: white; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        form { margin-top: 20px; }
-        label { display: block; margin-top: 10px; }
-        input { width: 100%; padding: 8px; margin-top: 5px; }
-        button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #2196F3;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover { background-color: #0b7dda; }
-        #qrPreview {
-            max-width: 200px;
-            margin-top: 15px;
-            display: none;
-        }
-        .verify-btn { background-color: #4CAF50; }
-        .verify-btn:hover { background-color: #45a049; }
-        #resultContainer {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 5px;
-            display: none;
-        }
-        .valid { background-color: #dff0d8; color: #3c763d; }
-        .invalid { background-color: #f2dede; color: #a94442; }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Certificate | CertVerify</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
-<body>
-    <h1>Check Certificate Validity</h1>
-
-    <div class="tab-container">
-        <div class="tab active" onclick="switchTab('idTab')">By Certificate ID</div>
-        <div class="tab" onclick="switchTab('qrTab')">By QR Code</div>
-    </div>
-
-    <div id="idTab" class="tab-content active">
-        <form method="POST" action="{{ url_for('check_certificate') }}">
-            <label for="certificate_id">Certificate ID:</label>
-            <input type="text" id="certificate_id" name="certificate_id" placeholder="Enter certificate ID">
-            <button type="submit">Check Certificate</button>
-        </form>
-    </div>
-
-    <div id="qrTab" class="tab-content">
-        <form id="qrForm" enctype="multipart/form-data">
-            <label for="qr_file">Upload QR Code Image:</label>
-            <input type="file" id="qr_file" name="qr_file" accept="image/*" required>
-            <img id="qrPreview" src="#" alt="QR Code Preview">
-            <button type="button" class="verify-btn" onclick="verifyQRCode()">Verify QR Code</button>
-        </form>
-        <div id="resultContainer">
-            <h3 id="resultTitle"></h3>
-            <div id="resultDetails"></div>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-certificate text-2xl text-emerald-600"></i>
+                    <h1 class="text-xl font-bold text-gray-800">CertVerify</h1>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="{{ url_for('home') }}" class="text-gray-600 hover:text-emerald-600 transition">Home</a>
+                    <a href="{{ url_for('list_certificates') }}" class="text-gray-600 hover:text-emerald-600 transition">Certificates</a>
+                    <a href="{{ url_for('issue_certificate') }}" class="text-gray-600 hover:text-emerald-600 transition">Issue</a>
+                    <a href="{{ url_for('check_certificate') }}" class="text-emerald-600 font-medium">Verify</a>
+                </nav>
+                <button class="md:hidden text-gray-600">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
         </div>
-    </div>
+    </header>
 
-    <p><a href="{{ url_for('home') }}">Back to Home</a></p>
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8 flex-grow">
+        <div class="max-w-3xl mx-auto">
+            <div class="mb-8">
+                <a href="{{ url_for('home') }}" class="inline-flex items-center text-emerald-600 hover:text-emerald-700 transition mb-4">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Back to Home
+                </a>
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">Verify Certificate</h1>
+                <p class="text-gray-600">Check the authenticity of a certificate using either the certificate ID or QR code</p>
+            </div>
+
+            <!-- Tabs -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden mb-8">
+                <div class="border-b border-gray-200">
+                    <nav class="flex -mb-px">
+                        <button id="idTabBtn" onclick="switchTab('idTab')"
+                                class="w-1/2 py-4 px-1 text-center border-b-2 font-medium text-sm border-emerald-500 text-emerald-600">
+                            <i class="fas fa-id-card mr-2"></i>By Certificate ID
+                        </button>
+                        <button id="qrTabBtn" onclick="switchTab('qrTab')"
+                                class="w-1/2 py-4 px-1 text-center border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                            <i class="fas fa-qrcode mr-2"></i>By QR Code
+                        </button>
+                    </nav>
+                </div>
+                <div class="p-6">
+                    <!-- Certificate ID Tab -->
+                    <div id="idTab" class="tab-content">
+                        <form method="POST" action="{{ url_for('check_certificate') }}" class="space-y-6">
+                            <div>
+                                <label for="certificate_id" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Certificate ID
+                                    <span class="text-red-500">*</span>
+                                </label>
+                                <div class="mt-1 relative rounded-md shadow-sm">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class="fas fa-key text-gray-400"></i>
+                                    </div>
+                                    <input type="text" id="certificate_id" name="certificate_id" required
+                                        class="focus:ring-emerald-500 focus:border-emerald-500 block w-full pl-10 py-3 sm:text-sm border-gray-300 rounded-md border"
+                                        placeholder="Enter certificate ID">
+                                </div>
+                            </div>
+                            <button type="submit"
+                                    class="w-full md:w-auto flex justify-center items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-emerald-600 hover:bg-emerald-700 transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">
+                                <i class="fas fa-search mr-2"></i> Check Certificate
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- QR Code Tab -->
+                    <div id="qrTab" class="tab-content hidden">
+                        <form id="qrForm" enctype="multipart/form-data" class="space-y-6">
+                            <div>
+                                <label for="qr_file" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Upload QR Code Image
+                                    <span class="text-red-500">*</span>
+                                </label>
+                                <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                                    <div class="space-y-1 text-center">
+                                        <div class="flex text-sm text-gray-600">
+                                            <label for="qr_file" class="relative cursor-pointer bg-white rounded-md font-medium text-emerald-600 hover:text-emerald-500 focus-within:outline-none">
+                                                <span>Upload a file</span>
+                                                <input id="qr_file" name="qr_file" type="file" class="sr-only" accept="image/*">
+                                            </label>
+                                            <p class="pl-1">or drag and drop</p>
+                                        </div>
+                                        <p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                                    </div>
+                                </div>
+                                <div class="mt-4 flex justify-center">
+                                    <img id="qrPreview" src="#" alt="QR Code Preview" class="hidden max-w-xs border border-gray-200 rounded-lg p-2">
+                                </div>
+                            </div>
+                            <button type="button" onclick="verifyQRCode()"
+                                    class="w-full md:w-auto flex justify-center items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+                                <i class="fas fa-check-circle mr-2"></i> Verify QR Code
+                            </button>
+                        </form>
+
+                        <!-- Verification Result -->
+                        <div id="resultContainer" class="hidden mt-8">
+                            <div id="resultCard" class="rounded-lg shadow-sm overflow-hidden">
+                                <div id="resultHeader" class="px-4 py-3 border-b">
+                                    <h3 id="resultTitle" class="text-lg font-medium"></h3>
+                                </div>
+                                <div id="resultDetails" class="px-4 py-4"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info Box -->
+            <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-info-circle text-blue-400"></i>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-blue-700">
+                            Verify certificates by scanning the QR code or entering the certificate ID. The system will check our database for authenticity.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+  <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="text-center">
+              <p>&copy; <span id="currentYear"></span> CertVerify. All rights reserved.</p>
+                <p class="text-gray-400 mt-2 text-sm">Secure certificate verification system</p>
+            </div>
+        </div>
+    </footer>
 
     <script>
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+        // Switch between tabs
         function switchTab(tabId) {
+            // Hide all tab contents
             document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
+                tab.classList.add('hidden');
             });
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.getElementById(tabId).classList.add('active');
-            event.currentTarget.classList.add('active');
+
+            // Show selected tab content
+            document.getElementById(tabId).classList.remove('hidden');
+
+            // Update tab button styles
+            document.getElementById('idTabBtn').classList.remove('border-emerald-500', 'text-emerald-600');
+            document.getElementById('idTabBtn').classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+            document.getElementById('qrTabBtn').classList.remove('border-emerald-500', 'text-emerald-600');
+            document.getElementById('qrTabBtn').classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+
+            // Style the active tab
+            document.getElementById(tabId + 'Btn').classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+            document.getElementById(tabId + 'Btn').classList.add('border-emerald-500', 'text-emerald-600');
         }
 
         // Preview QR code before upload
@@ -95,59 +178,75 @@
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(event) {
-                    document.getElementById('qrPreview').src = event.target.result;
-                    document.getElementById('qrPreview').style.display = 'block';
+                    const preview = document.getElementById('qrPreview');
+                    preview.src = event.target.result;
+                    preview.classList.remove('hidden');
                 }
                 reader.readAsDataURL(file);
             }
         });
 
-        function verifyQRCode() {
+        // Verify QR code
+        async function verifyQRCode() {
             const fileInput = document.getElementById('qr_file');
             if (!fileInput.files.length) {
                 alert('Please select a QR code image');
                 return;
             }
 
-            const formData = new FormData();
-            formData.append('qr_file', fileInput.files[0]);
+            const resultContainer = document.getElementById('resultContainer');
+            const resultCard = document.getElementById('resultCard');
+            const resultHeader = document.getElementById('resultHeader');
+            const resultTitle = document.getElementById('resultTitle');
+            const resultDetails = document.getElementById('resultDetails');
 
-            fetch('/verify-qr', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                const resultContainer = document.getElementById('resultContainer');
-                const resultTitle = document.getElementById('resultTitle');
-                const resultDetails = document.getElementById('resultDetails');
+            // Show loading state
+            resultContainer.classList.remove('hidden');
+            resultCard.className = 'rounded-lg shadow-sm overflow-hidden';
+            resultHeader.className = 'px-4 py-3 border-b bg-gray-100';
+            resultTitle.textContent = 'Verifying...';
+            resultDetails.innerHTML = '<p class="text-gray-600">Processing QR code, please wait...</p>';
 
-                resultContainer.style.display = 'block';
+            try {
+                const formData = new FormData();
+                formData.append('qr_file', fileInput.files[0]);
+
+                const response = await fetch('/verify-qr', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
 
                 if (data.error) {
-                    resultContainer.className = 'invalid';
+                    // Verification failed
+                    resultHeader.className = 'px-4 py-3 border-b bg-red-100';
                     resultTitle.textContent = 'Verification Failed';
-                    resultDetails.innerHTML = `<p>${data.error}</p>`;
+                    resultDetails.innerHTML = `<p class="text-red-600">${data.error}</p>`;
                 } else {
-                    resultContainer.className = 'valid';
+                    // Verification successful
+                    resultHeader.className = 'px-4 py-3 border-b bg-green-100';
                     resultTitle.textContent = 'Certificate Verified';
                     resultDetails.innerHTML = `
-                        <p><strong>Student:</strong> ${data.student_name}</p>
-                        <p><strong>Course:</strong> ${data.course_name}</p>
-                        <p><strong>Issue Date:</strong> ${data.issue_date}</p>
-                        <p><strong>Certificate ID:</strong> ${data.certificate_id}</p>
-                        <p><strong>Status:</strong> ${data.is_verified ? 'Verified' : 'Not Verified'}</p>
+                        <div class="space-y-2">
+                            <p><strong class="text-gray-700">Student:</strong> <span class="text-gray-900">${data.student_name}</span></p>
+                            <p><strong class="text-gray-700">Course:</strong> <span class="text-gray-900">${data.course_name}</span></p>
+                            <p><strong class="text-gray-700">Issue Date:</strong> <span class="text-gray-900">${data.issue_date}</span></p>
+                            <p><strong class="text-gray-700">Certificate ID:</strong> <span class="text-gray-900">${data.certificate_id}</span></p>
+                            <p><strong class="text-gray-700">Status:</strong>
+                                <span class="${data.is_verified ? 'text-green-600' : 'text-red-600'}">
+                                    ${data.is_verified ? 'Verified' : 'Not Verified'}
+                                </span>
+                            </p>
+                        </div>
                     `;
                 }
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error('Error:', error);
-                const resultContainer = document.getElementById('resultContainer');
-                resultContainer.style.display = 'block';
-                resultContainer.className = 'invalid';
-                document.getElementById('resultTitle').textContent = 'Error';
-                document.getElementById('resultDetails').innerHTML = '<p>An error occurred during verification</p>';
-            });
+                resultHeader.className = 'px-4 py-3 border-b bg-red-100';
+                resultTitle.textContent = 'Error';
+                resultDetails.innerHTML = '<p class="text-red-600">An error occurred during verification</p>';
+            }
         }
     </script>
 </body>

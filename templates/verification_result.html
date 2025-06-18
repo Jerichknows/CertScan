@@ -1,27 +1,155 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Certificate Verification</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
-        h1 { color: {% if valid %}#4CAF50{% else %}#f44336{% endif %}; }
-        .cert-info { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if valid %}Verified{% else %}Invalid{% endif %} Certificate | CertVerify</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
-<body>
-    {% if valid %}
-        <h1>Certificate Verified Successfully!</h1>
-        <div class="cert-info">
-            <p><strong>Student Name:</strong> {{ student_name }}</p>
-            <p><strong>Course Name:</strong> {{ course_name }}</p>
-            <p><strong>Issue Date:</strong> {{ issue_date }}</p>
-            <p><strong>Certificate ID:</strong> {{ certificate_id }}</p>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-certificate text-2xl text-emerald-600"></i>
+                    <h1 class="text-xl font-bold text-gray-800">CertVerify</h1>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="{{ url_for('home') }}" class="text-gray-600 hover:text-emerald-600 transition">Home</a>
+                    <a href="{{ url_for('list_certificates') }}" class="text-gray-600 hover:text-emerald-600 transition">Certificates</a>
+                    <a href="{{ url_for('issue_certificate') }}" class="text-gray-600 hover:text-emerald-600 transition">Issue</a>
+                    <a href="{{ url_for('check_certificate') }}" class="text-gray-600 hover:text-emerald-600 transition">Verify</a>
+                </nav>
+                <button class="md:hidden text-gray-600">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
         </div>
-    {% else %}
-        <h1>Invalid Certificate</h1>
-        <p>The certificate you are trying to verify does not exist in our system.</p>
-    {% endif %}
+    </header>
 
-    <p><a href="{{ url_for('home') }}">Back to Home</a></p>
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8 flex-grow">
+        <div class="max-w-3xl mx-auto">
+            <div class="mb-8">
+                <a href="{{ url_for('home') }}" class="inline-flex items-center text-emerald-600 hover:text-emerald-700 transition mb-4">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Back to Home
+                </a>
+
+                {% if valid %}
+                <!-- Success Verification -->
+                <div class="text-center mb-10">
+                    <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
+                        <i class="fas fa-check text-green-600 text-2xl"></i>
+                    </div>
+                    <h1 class="text-3xl font-bold text-green-600 mb-2">Certificate Verified Successfully!</h1>
+                    <p class="text-gray-600">This certificate is valid and registered in our system</p>
+                </div>
+
+                <!-- Certificate Details -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden mb-8">
+                    <div class="px-6 py-5 border-b border-gray-200 bg-green-50">
+                        <h3 class="text-lg font-medium text-green-800">Certificate Information</h3>
+                    </div>
+                    <div class="px-6 py-5">
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Student Name</p>
+                                <p class="mt-1 text-lg font-semibold text-gray-900">{{ student_name }}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Course Name</p>
+                                <p class="mt-1 text-lg font-semibold text-gray-900">{{ course_name }}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Issue Date</p>
+                                <p class="mt-1 text-lg font-semibold text-gray-900">{{ issue_date }}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Certificate ID</p>
+                                <p class="mt-1 text-lg font-semibold text-gray-900">{{ certificate_id }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Verification Stamp -->
+                <div class="flex justify-center mb-8">
+                    <div class="border-2 border-green-500 rounded-lg p-4 inline-flex items-center">
+                        <i class="fas fa-certificate text-green-500 text-4xl mr-3"></i>
+                        <div>
+                            <p class="font-bold text-green-700">OFFICIALLY VERIFIED</p>
+                            <p class="text-sm text-gray-600">CertVerify System</p>
+                        </div>
+                    </div>
+                </div>
+
+                {% else %}
+                <!-- Invalid Certificate -->
+                <div class="text-center mb-10">
+                    <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
+                        <i class="fas fa-times text-red-600 text-2xl"></i>
+                    </div>
+                    <h1 class="text-3xl font-bold text-red-600 mb-2">Invalid Certificate</h1>
+                    <p class="text-gray-600">The certificate you are trying to verify does not exist in our system</p>
+                </div>
+
+                <!-- Warning Box -->
+                <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded mb-8">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-exclamation-triangle text-red-400"></i>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-red-800">Certificate Not Found</h3>
+                            <div class="mt-2 text-sm text-red-700">
+                                <p>This certificate ID was not found in our database. It may have been revoked, deleted, or never issued.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Next Steps -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="px-6 py-5 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">What to do next?</h3>
+                    </div>
+                    <div class="px-6 py-5">
+                        <ul class="space-y-3">
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-emerald-500 mt-1 mr-2"></i>
+                                <span>Double-check the certificate ID for typos</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-emerald-500 mt-1 mr-2"></i>
+                                <span>Contact the issuing organization for confirmation</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-emerald-500 mt-1 mr-2"></i>
+                                <span>Try verifying using the QR code if available</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="text-center">
+              <p>&copy; <span id="currentYear"></span> CertVerify. All rights reserved.</p>
+                <p class="text-gray-400 mt-2 text-sm">Secure certificate verification system</p>
+            </div>
+        </div>
+    </footer>
+
+<script>
+  document.getElementById('currentYear').textContent = new Date().getFullYear();
+</script>
 </body>
 </html>

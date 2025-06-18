@@ -1,25 +1,168 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Certificate Verifier</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
-        h1 { color: #333; }
-        .menu { margin-top: 30px; }
-        .menu a { display: inline-block; margin: 10px; padding: 10px 20px;
-                 background-color: #4CAF50; color: white; text-decoration: none;
-                 border-radius: 5px; }
-        .menu a:hover { background-color: #45a049; }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
-<body>
-    <h1>Certificate Verification System</h1>
-    <p>This system allows you to issue and verify certificates using QR codes.</p>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-certificate text-3xl text-emerald-600"></i>
+                    <h1 class="text-2xl font-bold text-gray-800">CertVerify</h1>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="#" class="text-emerald-600 font-medium">Home</a>
+                    <a href="#" class="text-gray-600 hover:text-emerald-600 transition">About</a>
+                    <a href="#" class="text-gray-600 hover:text-emerald-600 transition">Contact</a>
+                </nav>
+                <button class="md:hidden text-gray-600">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+    </header>
 
-    <div class="menu">
-        <a href="{{ url_for('list_certificates') }}">View All Certificates</a>
-        <a href="{{ url_for('issue_certificate') }}">Issue New Certificate</a>
-        <a href="{{ url_for('check_certificate') }}">Check Certificate</a>
-    </div>
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-4 py-12">
+        <div class="max-w-3xl mx-auto text-center mb-12">
+            <h2 class="text-4xl font-bold text-gray-800 mb-4">Certificate Verification System</h2>
+            <p class="text-xl text-gray-600">Securely issue and verify digital certificates using QR code technology</p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8">
+            <!-- Card 1 -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition duration-300">
+                <div class="p-6">
+                    <div class="flex justify-center mb-4">
+                        <div class="bg-emerald-100 p-4 rounded-full">
+                            <i class="fas fa-list text-3xl text-emerald-600"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">View Certificates</h3>
+                    <p class="text-gray-600 mb-4">Browse all issued certificates in the system</p>
+                    <a href="{{ url_for('list_certificates') }}" class="inline-block px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition">View All</a>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition duration-300">
+                <div class="p-6">
+                    <div class="flex justify-center mb-4">
+                        <div class="bg-blue-100 p-4 rounded-full">
+                            <i class="fas fa-plus-circle text-3xl text-blue-600"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Issue Certificate</h3>
+                    <p class="text-gray-600 mb-4">Create and issue a new digital certificate</p>
+                    <a href="{{ url_for('issue_certificate') }}" class="inline-block px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Issue New</a>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition duration-300">
+                <div class="p-6">
+                    <div class="flex justify-center mb-4">
+                        <div class="bg-purple-100 p-4 rounded-full">
+                            <i class="fas fa-qrcode text-3xl text-purple-600"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Verify Certificate</h3>
+                    <p class="text-gray-600 mb-4">Check the authenticity of a certificate</p>
+                    <a href="{{ url_for('check_certificate') }}" class="inline-block px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition">Verify Now</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Info Section -->
+        <div class="mt-16 bg-white rounded-xl shadow-md overflow-hidden">
+            <div class="p-8 md:p-12">
+                <div class="md:flex items-center">
+                    <div class="md:w-1/2 mb-8 md:mb-0">
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Certificate Verification" class="rounded-lg shadow">
+                    </div>
+                    <div class="md:w-1/2 md:pl-12">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4">Secure & Reliable Verification</h3>
+                        <p class="text-gray-600 mb-4">Our system uses advanced QR code technology to ensure the authenticity of every certificate issued through our platform.</p>
+                        <ul class="space-y-3 mb-6">
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-emerald-500 mr-2"></i>
+                                <span>Tamper-proof digital certificates</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-emerald-500 mr-2"></i>
+                                <span>Instant verification with QR codes</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-emerald-500 mr-2"></i>
+                                <span>Secure database storage</span>
+                            </li>
+                        </ul>
+                        <button class="px-6 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition">Learn More</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="mb-8">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <i class="fas fa-certificate text-2xl text-emerald-400"></i>
+                        <span class="text-xl font-bold">CertVerify</span>
+                    </div>
+                    <p class="text-gray-400">Secure certificate verification system for organizations and institutions.</p>
+                </div>
+                <div class="mb-8">
+                    <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Home</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">About Us</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Services</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="mb-8">
+                    <h4 class="text-lg font-semibold mb-4">Services</h4>
+                    <ul class="space-y-2">
+                        <li><a href="{{ url_for('list_certificates') }}" class="text-gray-400 hover:text-white transition">View Certificates</a></li>
+                        <li><a href="{{ url_for('issue_certificate') }}" class="text-gray-400 hover:text-white transition">Issue Certificate</a></li>
+                        <li><a href="{{ url_for('check_certificate') }}" class="text-gray-400 hover:text-white transition">Verify Certificate</a></li>
+                    </ul>
+                </div>
+                <div class="mb-8">
+                    <h4 class="text-lg font-semibold mb-4">Contact Us</h4>
+                    <ul class="space-y-2">
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-2 text-emerald-400"></i>
+                            <span class="text-gray-400">contact@certverify.com</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone mr-2 text-emerald-400"></i>
+                            <span class="text-gray-400">+1 (555) 123-4567</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-map-marker-alt mr-2 text-emerald-400"></i>
+                            <span class="text-gray-400">123 Tech Park, Silicon Valley</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+              <p>&copy; <span id="currentYear"></span> CertVerify. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+<script>
+  document.getElementById('currentYear').textContent = new Date().getFullYear();
+</script>
 </body>
 </html>

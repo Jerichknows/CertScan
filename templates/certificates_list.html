@@ -1,68 +1,268 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>All Certificates</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Certificates | CertVerify</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; }
-        h1 { color: #333; margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd; }
-        th { background-color: #4CAF50; color: white; font-weight: bold; }
-        tr:nth-child(even) { background-color: #f9f9f9; }
-        tr:hover { background-color: #f1f1f1; }
-        .verified { color: #4CAF50; font-weight: bold; }
-        .not-verified { color: #f44336; font-weight: bold; }
-        .action-links a {
-            display: inline-block;
-            padding: 6px 12px;
-            margin-right: 5px;
-            border-radius: 4px;
-            text-decoration: none;
-            color: white;
-            font-size: 14px;
+        .pagination-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
-        .verify-btn { background-color: #4CAF50; }
-        .download-btn { background-color: #9C27B0; }
     </style>
 </head>
-<body>
-    <h1>All Issued Certificates</h1>
-    <p><a href="{{ url_for('home') }}" style="text-decoration: none; color: #2196F3;">← Back to Home</a></p>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-certificate text-2xl text-emerald-600"></i>
+                    <h1 class="text-xl font-bold text-gray-800">CertVerify</h1>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="{{ url_for('home') }}" class="text-gray-600 hover:text-emerald-600 transition">Home</a>
+                    <a href="{{ url_for('list_certificates') }}" class="text-emerald-600 font-medium">Certificates</a>
+                    <a href="{{ url_for('issue_certificate') }}" class="text-gray-600 hover:text-emerald-600 transition">Issue</a>
+                    <a href="{{ url_for('check_certificate') }}" class="text-gray-600 hover:text-emerald-600 transition">Verify</a>
+                </nav>
+                <button class="md:hidden text-gray-600">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </header>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Certificate ID</th>
-                <th>Student Name</th>
-                <th>Course Name</th>
-                <th>Issue Date</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for cert in certificates %}
-            <tr>
-                <td>{{ cert.certificate_id }}</td>
-                <td>{{ cert.student_name }}</td>
-                <td>{{ cert.course_name }}</td>
-                <td>{{ cert.issue_date }}</td>
-                <td class="{% if cert.is_verified %}verified{% else %}not-verified{% endif %}">
-                    {% if cert.is_verified %}Verified{% else %}Not Verified{% endif %}
-                </td>
-                <td class="action-links">
-                    {% if not cert.is_verified %}
-                    <a href="{{ url_for('verify_certificate', cert_id=cert.certificate_id) }}" class="verify-btn">Verify</a>
-                    {% endif %}
-                    {% if cert.qr_filename %}
-                    <a href="{{ url_for('static', filename='qrcodes/' + cert.qr_filename) }}" class="download-btn" download>Download QR</a>
-                    {% else %}
-                    <span class="download-btn" style="background-color: #cccccc; cursor: not-allowed;">Download N/A</span>
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <!-- Main Content -->
+  <main class="container mx-auto px-4 py-8 flex-grow">
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">All Issued Certificates</h1>
+                <p class="text-gray-600 mt-2">View and manage all certificates in the system</p>
+            </div>
+            <a href="{{ url_for('home') }}" class="flex items-center text-emerald-600 hover:text-emerald-700 transition">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Back to Home
+            </a>
+        </div>
+
+        <!-- Certificate Table -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Certificate ID</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student Name</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course Name</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Issue Date</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="certificatesTableBody" class="bg-white divide-y divide-gray-200">
+                        {% for cert in certificates %}
+                        <tr class="certificate-row hover:bg-gray-50 transition" data-id="{{ cert.certificate_id }}">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ cert.certificate_id }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ cert.student_name }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ cert.course_name }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ cert.issue_date }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                {% if cert.is_verified %}
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                    <i class="fas fa-check-circle mr-1"></i> Verified
+                                </span>
+                                {% else %}
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                    <i class="fas fa-times-circle mr-1"></i> Not Verified
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <div class="flex space-x-2">
+                                    {% if not cert.is_verified %}
+                                    <a href="{{ url_for('verify_certificate', cert_id=cert.certificate_id) }}" class="px-3 py-1 bg-emerald-600 text-white text-xs rounded hover:bg-emerald-700 transition flex items-center">
+                                        <i class="fas fa-check mr-1"></i> Verify
+                                    </a>
+                                    {% endif %}
+                                    {% if cert.qr_filename %}
+                                    <a href="{{ url_for('static', filename='qrcodes/' + cert.qr_filename) }}" class="px-3 py-1 bg-purple-600 text-white text-xs rounded hover:bg-purple-700 transition flex items-center" download>
+                                        <i class="fas fa-download mr-1"></i> QR Code
+                                    </a>
+                                    {% else %}
+                                    <span class="px-3 py-1 bg-gray-300 text-gray-600 text-xs rounded flex items-center cursor-not-allowed">
+                                        <i class="fas fa-ban mr-1"></i> QR N/A
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div id="paginationControls" class="mt-6 flex justify-between items-center bg-white px-4 py-3 rounded-lg shadow-sm hidden">
+            <div id="paginationInfo" class="text-sm text-gray-700">
+                Showing <span id="startItem" class="font-medium">1</span> to <span id="endItem" class="font-medium">10</span> of <span id="totalItems" class="font-medium">{{ certificates|length }}</span> results
+            </div>
+            <div class="flex space-x-2">
+                <button id="prevBtn" class="pagination-btn px-3 py-1 border border-gray-300 rounded text-gray-600 hover:bg-gray-50 transition disabled">
+                    Previous
+                </button>
+                <div id="pageNumbers" class="flex space-x-1">
+                    <!-- Page numbers will be inserted here by JavaScript -->
+                </div>
+                <button id="nextBtn" class="pagination-btn px-3 py-1 border border-gray-300 rounded text-gray-600 hover:bg-gray-50 transition">
+                    Next
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="text-center">
+              <p>&copy; <span id="currentYear"></span> CertVerify. All rights reserved.</p>
+                <p class="text-gray-400 mt-2 text-sm">Secure certificate verification system</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+        document.addEventListener('DOMContentLoaded', function() {
+            const itemsPerPage = 10;
+            const allRows = document.querySelectorAll('.certificate-row');
+            const totalItems = allRows.length;
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            const paginationControls = document.getElementById('paginationControls');
+            const pageNumbersContainer = document.getElementById('pageNumbers');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const startItemSpan = document.getElementById('startItem');
+            const endItemSpan = document.getElementById('endItem');
+            const totalItemsSpan = document.getElementById('totalItems');
+
+            let currentPage = 1;
+
+            // Only show pagination if we have more than one page
+            if (totalPages > 1) {
+                paginationControls.classList.remove('hidden');
+                updatePagination();
+            }
+
+            // Initialize page numbers
+            function updatePageNumbers() {
+                pageNumbersContainer.innerHTML = '';
+
+                // Always show first page
+                addPageNumber(1);
+
+                // Show ellipsis if needed before current page
+                if (currentPage > 3) {
+                    const ellipsis = document.createElement('span');
+                    ellipsis.className = 'px-3 py-1';
+                    ellipsis.textContent = '...';
+                    pageNumbersContainer.appendChild(ellipsis);
+                }
+
+                // Show current page and adjacent pages
+                const startPage = Math.max(2, currentPage - 1);
+                const endPage = Math.min(totalPages - 1, currentPage + 1);
+
+                for (let i = startPage; i <= endPage; i++) {
+                    addPageNumber(i);
+                }
+
+                // Show ellipsis if needed after current page
+                if (currentPage < totalPages - 2) {
+                    const ellipsis = document.createElement('span');
+                    ellipsis.className = 'px-3 py-1';
+                    ellipsis.textContent = '...';
+                    pageNumbersContainer.appendChild(ellipsis);
+                }
+
+                // Always show last page if different from first
+                if (totalPages > 1) {
+                    addPageNumber(totalPages);
+                }
+            }
+
+            function addPageNumber(page) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = 'px-3 py-1 border border-gray-300 rounded text-gray-600 hover:bg-gray-50 transition';
+                if (page === currentPage) {
+                    pageBtn.classList.add('bg-gray-100', 'text-gray-700', 'font-medium');
+                }
+                pageBtn.textContent = page;
+                pageBtn.addEventListener('click', () => {
+                    currentPage = page;
+                    updatePagination();
+                });
+                pageNumbersContainer.appendChild(pageBtn);
+            }
+
+            function updatePagination() {
+                // Hide all rows
+                allRows.forEach(row => row.classList.add('hidden'));
+
+                // Show rows for current page
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+
+                for (let i = startIndex; i < endIndex; i++) {
+                    allRows[i].classList.remove('hidden');
+                }
+
+                // Update pagination info
+                startItemSpan.textContent = startIndex + 1;
+                endItemSpan.textContent = endIndex;
+                totalItemsSpan.textContent = totalItems;
+
+                // Update page numbers
+                updatePageNumbers();
+
+                // Update button states
+                prevBtn.disabled = currentPage === 1;
+                nextBtn.disabled = currentPage === totalPages;
+
+                if (prevBtn.disabled) {
+                    prevBtn.classList.add('disabled');
+                } else {
+                    prevBtn.classList.remove('disabled');
+                }
+
+                if (nextBtn.disabled) {
+                    nextBtn.classList.add('disabled');
+                } else {
+                    nextBtn.classList.remove('disabled');
+                }
+            }
+
+            // Event listeners for previous/next buttons
+            prevBtn.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    updatePagination();
+                }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    updatePagination();
+                }
+            });
+
+            // Initialize the view
+            updatePagination();
+        });
+    </script>
 </body>
 </html>

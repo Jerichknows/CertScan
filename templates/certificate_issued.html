@@ -1,34 +1,138 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Certificate Issued</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
-        h1 { color: #4CAF50; }
-        .cert-info { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
-        .qr-code { text-align: center; margin: 20px 0; }
-        .qr-code img { max-width: 300px; }
-        .verification-url { word-break: break-all; background-color: #f5f5f5; padding: 10px; }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificate Issued | CertVerify</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
-<body>
-    <h1>Certificate Successfully Issued!</h1>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-certificate text-2xl text-emerald-600"></i>
+                    <h1 class="text-xl font-bold text-gray-800">CertVerify</h1>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="{{ url_for('home') }}" class="text-gray-600 hover:text-emerald-600 transition">Home</a>
+                    <a href="{{ url_for('list_certificates') }}" class="text-gray-600 hover:text-emerald-600 transition">Certificates</a>
+                    <a href="{{ url_for('issue_certificate') }}" class="text-gray-600 hover:text-emerald-600 transition">Issue</a>
+                    <a href="{{ url_for('check_certificate') }}" class="text-gray-600 hover:text-emerald-600 transition">Verify</a>
+                </nav>
+                <button class="md:hidden text-gray-600">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </header>
 
-    <div class="cert-info">
-        <p><strong>Student Name:</strong> {{ student_name }}</p>
-        <p><strong>Course Name:</strong> {{ course_name }}</p>
-        <p><strong>Issue Date:</strong> {{ issue_date }}</p>
-        <p><strong>Certificate ID:</strong> {{ certificate_id }}</p>
-    </div>
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <div class="max-w-3xl mx-auto">
+            <!-- Success Message -->
+            <div class="text-center mb-10">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-emerald-100 mb-4">
+                    <i class="fas fa-check text-emerald-600 text-xl"></i>
+                </div>
+                <h1 class="text-3xl font-bold text-emerald-600 mb-2">Certificate Successfully Issued!</h1>
+                <p class="text-gray-600">The digital certificate has been created and is ready for verification</p>
+            </div>
 
-    <div class="qr-code">
-        <p><strong>Verification QR Code:</strong></p>
-        <img src="{{ qr_code }}" alt="QR Code">
-    </div>
+            <!-- Certificate Details -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden mb-8">
+                <div class="px-6 py-5 border-b border-gray-200">
+                    <h3 class="text-lg font-medium text-gray-900">Certificate Information</h3>
+                </div>
+                <div class="px-6 py-5">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Student Name</p>
+                            <p class="mt-1 text-lg font-semibold text-gray-900">{{ student_name }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Course Name</p>
+                            <p class="mt-1 text-lg font-semibold text-gray-900">{{ course_name }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Issue Date</p>
+                            <p class="mt-1 text-lg font-semibold text-gray-900">{{ issue_date }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Certificate ID</p>
+                            <p class="mt-1 text-lg font-semibold text-gray-900">{{ certificate_id }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-    <p><strong>Verification URL:</strong></p>
-    <div class="verification-url">{{ verification_url }}</div>
+            <!-- QR Code Section -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden mb-8">
+                <div class="px-6 py-5 border-b border-gray-200">
+                    <h3 class="text-lg font-medium text-gray-900">Verification QR Code</h3>
+                </div>
+                <div class="px-6 py-5">
+                    <div class="text-center">
+                        <img src="{{ qr_code }}" alt="QR Code" class="mx-auto w-64 h-64 border border-gray-200 p-2 rounded-lg">
+                        <p class="mt-4 text-sm text-gray-500">Scan this QR code to verify the certificate</p>
+                    </div>
+                </div>
+            </div>
 
-    <p><a href="{{ url_for('home') }}">Back to Home</a></p>
+            <!-- Verification URL -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden mb-8">
+                <div class="px-6 py-5 border-b border-gray-200">
+                    <h3 class="text-lg font-medium text-gray-900">Verification URL</h3>
+                </div>
+                <div class="px-6 py-5">
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <p class="text-sm font-medium text-gray-500 mb-2">Share this URL to verify the certificate:</p>
+                        <div class="flex items-center">
+                            <input type="text" value="{{ verification_url }}"
+                                   class="flex-grow px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-emerald-500 focus:border-emerald-500"
+                                   readonly>
+                            <button onclick="copyToClipboard('{{ verification_url }}')"
+                                    class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-r-md transition">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row justify-center gap-4 mt-8">
+                <a href="{{ url_for('home') }}" class="inline-flex items-center justify-center px-6 py-3 border border-gray-300 shadow-sm text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition">
+                    <i class="fas fa-home mr-2"></i> Back to Home
+                </a>
+                <a href="{{ qr_code }}" download="certificate_qr_code.png" class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 transition">
+                    <i class="fas fa-download mr-2"></i> Download QR Code
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="text-center">
+              <p>&copy; <span id="currentYear"></span> CertVerify. All rights reserved.</p>
+                <p class="text-gray-400 mt-2 text-sm">Secure certificate verification system</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                alert('Verification URL copied to clipboard!');
+            }, function(err) {
+                console.error('Could not copy text: ', err);
+            });
+        }
+    </script>
 </body>
 </html>
